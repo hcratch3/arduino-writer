@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Arduino IDE Command Executor</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+  <header>
+    <h1>Arduino IDE Command Executor</h1>
+  </header>
+  <main>
+    <div class="command-section">
+      <div>
+        <button onclick="openFileDialog()">Select .ino File</button>
+        <input type="text" id="file-path" readonly placeholder="Selected file path will appear here">
+      </div>
+    </div>
+    <div class="command-section">
+      <label for="device">Select Device:</label>
+      <select id="device">
+        <option value="arduino:avr:uno">Arduino Uno</option>
+        <option value="arduino:avr:mega">Arduino Mega</option>
+        <option value="arduino:avr:nano">Arduino Nano</option>
+        <!-- Add more options as needed -->
+      </select>
+    </div>
+    <div class="command-section">
+      <label for="port">Select Port:</label>
+      <select id="port">
+        <option value="/dev/ttyUSB0">/dev/ttyUSB0</option>
+        <option value="/dev/ttyUSB1">/dev/ttyUSB1</option>
+        <!-- Add more options as needed -->
+      </select>
+    </div>
+    <!--<div class="command-section">
+      <label for="command">Command:</label>
+      <textarea id="command" placeholder="File content will be loaded here" rows="10" cols="50"></textarea>
+    </div>-->
+    <div class="command-section">
+      <div>
+        <button onclick="flash()">Flash</button>
+        <button onclick="download()" style="background-color: blue;">📥Download</button>
+        <button onclick="install()" style="background-color: red;">📲Install</button>
+        <button onclick="setting()" style="background-color: darkgoldenrod;">Setting</button>
+      </div>
+    </div>
+    <pre id="result"></pre>
+  </main>
+  <script>
+    async function openFileDialog() {
+      const filePath = await window.electron.openFileDialog();
+      if (filePath) {
+        document.getElementById('file-path').value = filePath;
+        //const inofile = filePath;
+
+        // Read the file content
+        //const response = await fetch(`file://${filePath}`);
+        //const text = await response.text();
+        //document.getElementById('command').value = text;
+      }
+    }
+
+    async function executeCommand(command) {
+      window.electron.executeCommand(command);
+    }
+
+    window.electron.onCommandResult((result) => {
+      document.getElementById('result').innerText = result;
+    });
+
+    window.addEventListener('DOMContentLoaded', function () {
+      command = `arduino-cli version`;
+      executeCommand(command);
+      command = `chcp 65001`;
+      executeCommand(command);
+    });
+
+    async function download() {
+      downloadApp("https://downloads.arduino.cc/arduino-cli/arduino-cli_1.0.2_Windows_64bit.msi");
+      command = `echo Click Install when the file has finished downloading`;
+      await executeCommand(command);
+    }
+
+    function install() {
+      command = `%userprofile%\\Downloads\\arduino-cli_1.0.2_Windows_64bit.msi`;
+      executeCommand(command);
+    }
+
+    function downloadApp(url) {
+      //const name = 'Arduino-CLI.msi';
+      const a = document.createElement('a');
+
+      a.href = url;
+      a.download = 'Arduino-CLI.msi';
+      a.click();
+    }
+
+    function setting() {
+      window.open('./setting.html', null, 'top=100,left=100,width=400,height=1000');
+    }
+
+    function flash() {
+      //const commandElement = document.getElementById('command');
+      const deviceElement = document.getElementById('device');
+      const portElement = document.getElementById('port');
+      const fileElement = document.getElementById('file-path');
+
+      if (commandElement && deviceElement && portElement) {
+        //const fileContent = commandElement.value;
+        const device = deviceElement.value;
+        const port = portElement.value;
+        const file = fileElement.value;
+
+        const command = `arduino-cli upload -p ${port} --fqbn ${device} -i ${file}`;
+        executeCommand(command);
+      } else {
+        console.error('One or more elements not found.');
+      }
+    }
+  </script>
+</body>
+
+</html>

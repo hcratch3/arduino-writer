@@ -1,0 +1,16 @@
+{
+  "name": "fluttering-unit-plead-db6si",
+  "productName": "fluttering-unit-plead-db6si",
+  "description": "My Electron application description",
+  "keywords": [],
+  "main": "./main.js",
+  "version": "1.0.0",
+  "author": "hcratch3",
+  "scripts": {
+    "start": "electron ."
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "electron": "29.1.5"
+  }
+}
