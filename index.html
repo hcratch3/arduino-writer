@@ -10,9 +10,9 @@
 
 <body>
   <header>
-    <h1>Arduino IDE Command Executor</h1>
+    <h1>Arduino Writer</h1>
   </header>
-  <main>
+  <main style="padding: 5px 0;">
     <div class="command-section">
       <div>
         <button onclick="openFileDialog()">Select .ino File</button>
@@ -36,31 +36,22 @@
         <!-- Add more options as needed -->
       </select>
     </div>
-    <!--<div class="command-section">
-      <label for="command">Command:</label>
-      <textarea id="command" placeholder="File content will be loaded here" rows="10" cols="50"></textarea>
-    </div>-->
     <div class="command-section">
       <div>
         <button onclick="flash()">Flash</button>
-        <button onclick="download()" style="background-color: blue;">📥Download</button>
-        <button onclick="install()" style="background-color: red;">📲Install</button>
         <button onclick="setting()" style="background-color: darkgoldenrod;">Setting</button>
       </div>
     </div>
     <pre id="result"></pre>
   </main>
+  <footer>
+    <span>powered by <img src="ArduinoCLI.png"></span>
+  </footer>
   <script>
     async function openFileDialog() {
       const filePath = await window.electron.openFileDialog();
       if (filePath) {
         document.getElementById('file-path').value = filePath;
-        //const inofile = filePath;
-
-        // Read the file content
-        //const response = await fetch(`file://${filePath}`);
-        //const text = await response.text();
-        //document.getElementById('command').value = text;
       }
     }
 
@@ -79,38 +70,17 @@
       executeCommand(command);
     });
 
-    async function download() {
-      downloadApp("https://downloads.arduino.cc/arduino-cli/arduino-cli_1.0.2_Windows_64bit.msi");
-      command = `echo Click Install when the file has finished downloading`;
-      await executeCommand(command);
-    }
-
-    function install() {
-      command = `%userprofile%\\Downloads\\arduino-cli_1.0.2_Windows_64bit.msi`;
-      executeCommand(command);
-    }
-
-    function downloadApp(url) {
-      //const name = 'Arduino-CLI.msi';
-      const a = document.createElement('a');
-
-      a.href = url;
-      a.download = 'Arduino-CLI.msi';
-      a.click();
-    }
-
     function setting() {
-      window.open('./setting.html', null, 'top=100,left=100,width=400,height=1000');
+      window.electron.openSettings();
     }
 
     function flash() {
-      //const commandElement = document.getElementById('command');
+
       const deviceElement = document.getElementById('device');
       const portElement = document.getElementById('port');
       const fileElement = document.getElementById('file-path');
 
-      if (commandElement && deviceElement && portElement) {
-        //const fileContent = commandElement.value;
+      if (fileElement && deviceElement && portElement) {
         const device = deviceElement.value;
         const port = portElement.value;
         const file = fileElement.value;

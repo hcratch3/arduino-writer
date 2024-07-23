@@ -1,4 +1,3 @@
-// main.js
 const { app, BrowserWindow, ipcMain, dialog } = require('electron');
 const path = require('path');
 const fs = require('fs');
@@ -6,8 +5,8 @@ const { exec } = require('child_process');
 
 function createWindow() {
   const mainWindow = new BrowserWindow({
-    width: 1000,
-    height: 800,
+    width: 800,
+    height: 600,
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
       contextIsolation: true,
@@ -19,13 +18,32 @@ function createWindow() {
   mainWindow.loadFile('index.html');
 }
 
-// Open file dialog and return file path
+// New function to create the settings window
+function createSettingsWindow() {
+  const settingsWindow = new BrowserWindow({
+    width: 400,
+    height: 300,
+    webPreferences: {
+      preload: path.join(__dirname, 'preload.js'),
+      contextIsolation: true,
+      enableRemoteModule: false,
+      nodeIntegration: false,
+    }
+  });
+
+  settingsWindow.loadFile('setting.html');
+}
+
 ipcMain.handle('open-file-dialog', async () => {
   const result = await dialog.showOpenDialog({
     properties: ['openFile'],
     filters: [{ name: 'Arduino Files', extensions: ['ino'] }]
   });
   return result.filePaths[0] || null;
+});
+
+ipcMain.on('open-settings', () => {
+  createSettingsWindow();
 });
 
 app.whenReady().then(() => {

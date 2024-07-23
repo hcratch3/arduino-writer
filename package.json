@@ -1,6 +1,6 @@
 {
-  "name": "fluttering-unit-plead-db6si",
-  "productName": "fluttering-unit-plead-db6si",
+  "name": "arduino-writer",
+  "productName": "arduino-writer",
   "description": "My Electron application description",
   "keywords": [],
   "main": "./main.js",

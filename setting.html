@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Arduino CLI 設定</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+    <main>
+        <div class="command-section">
+            <label for="board">ボードのインストール:</label>
+            <input type="text" id="board" name="board" placeholder="例: arduino:avr">
+        </div>
+        <div class="command-section">
+            <label for="library">ライブラリーのインストール:</label>
+            <input type="text" id="library" name="library" placeholder="例: ArduinoJson">
+        </div>
+        <div class="command-section">
+            <div>
+                <button type="button" onclick="generateAndExecuteCommands()">実行</button>
+                <button onclick="download()" style="background-color: blue;">📥Download</button>
+                <button onclick="install()" style="background-color: red;">📲Install</button>
+            </div>
+        </div>
+        <pre id="result"></pre>
+    </main>
+
+    <script>
+        function generateAndExecuteCommands() {
+            const board = document.getElementById('board').value;
+            const library = document.getElementById('library').value;
+            let commands = '';
+
+            if (board) {
+                commands += `arduino-cli core install ${board}\n`;
+            }
+
+            if (library) {
+                commands += `arduino-cli lib install ${library}\n`;
+            }
+            executeCommand(commands);
+        }
+
+        async function executeCommand(command) {
+            window.electron.executeCommand(command);
+        }
+
+        window.electron.onCommandResult((result) => {
+            document.getElementById('result').innerText = result;
+        });
+
+        async function download() {
+            downloadApp("https://downloads.arduino.cc/arduino-cli/arduino-cli_1.0.2_Windows_64bit.msi");
+            command = `echo Click Install when the file has finished downloading`;
+            await executeCommand(command);
+        }
+
+        function install() {
+            command = `%userprofile%\\Downloads\\arduino-cli_1.0.2_Windows_64bit.msi`;
+            executeCommand(command);
+        }
+
+        function downloadApp(url) {
+            //const name = 'Arduino-CLI.msi';
+            const a = document.createElement('a');
+
+            a.href = url;
+            a.download = 'Arduino-CLI.msi';
+            a.click();
+        }
+    </script>
+</body>
+
+</html>
